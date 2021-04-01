@@ -8,6 +8,10 @@ class SplashActivity : AppCompatActivity() {
 
     companion object {
         lateinit var instance: SplashActivity
+
+        fun isInitialized(): Boolean {
+            return this::instance.isInitialized
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

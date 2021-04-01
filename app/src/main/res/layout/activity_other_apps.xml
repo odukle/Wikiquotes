@@ -25,6 +25,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CustomCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -32,7 +33,6 @@
                 android:layout_marginEnd="16dp"
                 android:onClick="thugTalk"
                 android:tag="https://play.google.com/store/apps/details?id=com.odukle.gizoogle"
-                style="@style/CustomCardView"
                 app:cardCornerRadius="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -76,6 +76,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CustomCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -83,7 +84,6 @@
                 android:layout_marginEnd="16dp"
                 android:onClick="presetsRoom"
                 android:tag="https://play.google.com/store/apps/details?id=com.odukle.presetsroom"
-                style="@style/CustomCardView"
                 app:cardCornerRadius="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -126,6 +126,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CustomCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -133,7 +134,6 @@
                 android:layout_marginEnd="16dp"
                 android:onClick="tubeNotes"
                 android:tag="https://play.google.com/store/apps/details?id=com.odukle.ytnotes"
-                style="@style/CustomCardView"
                 app:cardCornerRadius="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -176,6 +176,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CustomCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -183,7 +184,6 @@
                 android:layout_marginEnd="16dp"
                 android:onClick="funTrans"
                 android:tag="https://play.google.com/store/apps/details?id=com.odukle.funtranslations"
-                style="@style/CustomCardView"
                 app:cardCornerRadius="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -227,15 +227,15 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                style="@style/CustomCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
                 android:onClick="funTrans"
                 android:tag="https://play.google.com/store/apps/details?id=com.odukle.toastlyrics"
-                style="@style/CustomCardView"
                 app:cardCornerRadius="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -278,61 +278,69 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="5dp"
+                android:text="Contact"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/CustomCardView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:onClick="openInsta"
+                    android:tag="https://www.instagram.com/odukle.jpg/"
+                    app:cardCornerRadius="10dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:src="@drawable/ic_instagram" />
+                </com.google.android.material.card.MaterialCardView>
+
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/CustomCardView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:onClick="openEmail"
+                    android:tag="odukle.exe@gmail.com"
+                    app:cardCornerRadius="10dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:src="@drawable/ic_envelope" />
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/ad_view_aa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-9193191601772541/5660338831" />
+
         </LinearLayout>
     </ScrollView>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Contact"
-        android:textSize="18sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="5dp"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tag="https://www.instagram.com/odukle.jpg/"
-            android:onClick="openInsta"
-            app:cardCornerRadius="10dp"
-            android:layout_marginBottom="4dp"
-            style="@style/CustomCardView"
-            android:layout_marginStart="16dp">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_instagram"
-                android:layout_margin="5dp"
-                android:foreground="?attr/selectableItemBackground"/>
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tag="odukle.exe@gmail.com"
-            android:onClick="openEmail"
-            app:cardCornerRadius="10dp"
-            android:layout_marginBottom="4dp"
-            style="@style/CustomCardView"
-            android:layout_marginStart="16dp">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_envelope"
-                android:layout_margin="5dp"
-                android:foreground="?attr/selectableItemBackground"/>
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
 
 
 </LinearLayout>

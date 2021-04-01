@@ -17,6 +17,7 @@ import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
 import java.util.*
 
+//private const val AD_UNIT_ID = "ca-app-pub-3940256099942544/3419835294"
 private const val AD_UNIT_ID = "ca-app-pub-9193191601772541/8893840988"
 const val PREF = "pref"
 const val AD_COUNT = "adCount"
@@ -68,7 +69,7 @@ class AppOpenManager(private val myApplication: MyApplication) :
     }
 
     /** Utility method that checks if ad exists and can be shown.  */
-    fun isAdAvailable(): Boolean {
+    private fun isAdAvailable(): Boolean {
         return appOpenAd != null && wasLoadTimeLessThanNHoursAgo(4)
     }
 
@@ -80,11 +81,12 @@ class AppOpenManager(private val myApplication: MyApplication) :
 
     @OnLifecycleEvent(ON_START)
     fun onStart() {
-        showAdIfAvailable()
-        Log.d(TAG, "onStart")
+        if (SplashActivity.isInitialized()) {
+            showAdIfAvailable()
+        }
     }
 
-    fun showAdIfAvailable() {
+    private fun showAdIfAvailable() {
         // Only show ad if there is not already an app open ad currently showing
         // and an ad is available.
         val sharedPreferences =

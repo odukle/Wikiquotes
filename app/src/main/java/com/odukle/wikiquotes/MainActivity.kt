@@ -1,8 +1,7 @@
 package com.odukle.wikiquotes
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -13,14 +12,17 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.tasks.Task
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.quotes_rv_layout.*
+//import kotlinx.android.synthetic.main.quotes_rv_layout.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -28,17 +30,22 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
+import java.net.SocketTimeoutException
+import kotlin.collections.set
 
-
+const val CLIP_DATA = "clipData"
 private const val TAG = "MainActivity"
+const val INTER_UNIT_ID = "ca-app-pub-9193191601772541/4804300588"  //test
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), EpisodeAdapter.OnQuoteClickListener {
 
+    private var mInterstitialAd: InterstitialAd? = null
 
     companion object {
         lateinit var functions: FirebaseFunctions
         lateinit var instance: MainActivity
         lateinit var adRequest: AdRequest
+        lateinit var menuMain: Menu
 
         fun getFilmQuotes(link: String): Task<Map<String, Any>> {
             Log.d(TAG, "getFilmQuotes: called")
@@ -52,6 +59,11 @@ class MainActivity : AppCompatActivity() {
                     task.result?.data as Map<String, Any>
                 }
         }
+
+        fun isAdRequestInitialized(): Boolean {
+            return this::adRequest.isInitialized
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         instance = this
 
-        MobileAds.initialize(this)
         adRequest = AdRequest.Builder().build()
 
         layout_main.gravity = Gravity.CENTER
@@ -75,13 +86,54 @@ class MainActivity : AppCompatActivity() {
         tab_layout.visibility = View.GONE
         view_pager.visibility = View.GONE
 
+        var iCount = 0
         btn_search.setOnClickListener {
             if (search_query.text.isNullOrEmpty()) {
                 Toast.makeText(this, "empty query", Toast.LENGTH_SHORT).show()
             } else {
                 if (isOnline(this)) {
+                    iCount++
+
+                    val fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdShowedFullScreenContent() {
+                            Log.d(TAG, "Ad showed fullscreen content.")
+                            mInterstitialAd = null
+                        }
+                    }
+
+                    if (mInterstitialAd == null) {
+                        InterstitialAd.load(
+                            this,
+                            INTER_UNIT_ID,
+                            adRequest,
+                            object : InterstitialAdLoadCallback() {
+                                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                                    mInterstitialAd = interstitialAd
+                                    interstitialAd.fullScreenContentCallback =
+                                        fullScreenContentCallback
+
+                                    if (iCount > 3) {
+                                        interstitialAd.show(this@MainActivity)
+                                        iCount = 0
+                                    }
+                                }
+
+                                override fun onAdFailedToLoad(error: LoadAdError) {
+                                    Log.e(TAG, "onAdFailedToLoad: ${error.message}")
+                                }
+                            })
+                    } else {
+                        mInterstitialAd!!.fullScreenContentCallback = fullScreenContentCallback
+                        if (iCount > 3) {
+                            mInterstitialAd!!.show(this)
+                            iCount = 0
+                        }
+
+                    }
+
                     layout_main.gravity = Gravity.CENTER
                     progress_bar.visibility = View.VISIBLE
+                    search_error_tv.visibility = View.GONE
                     tab_layout.visibility = View.GONE
                     view_pager.visibility = View.GONE
                     search_instructions.visibility = View.GONE
@@ -91,6 +143,14 @@ class MainActivity : AppCompatActivity() {
                         val map = getSearchResults(search_query.text.toString())
                         if (map != null) {
                             withContext(Main) {
+
+                                if (map.isEmpty()) {
+                                    search_error_tv.visibility = View.VISIBLE
+                                    val query = search_query.text.toString()
+                                    search_error_tv.text = "No results for \"$query\""
+                                } else {
+                                    search_error_tv.visibility = View.GONE
+                                }
                                 val adapter = SearchAdapter(map)
                                 search_rv.layoutManager = LinearLayoutManager(this@MainActivity)
                                 search_rv.adapter = adapter
@@ -125,6 +185,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        menuMain = menu
         return true
     }
 
@@ -132,6 +193,17 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.other_apps -> {
                 startActivity(Intent(this, OtherApps::class.java))
+            }
+
+            R.id.menu_search -> {
+                if (search_layout.isVisible) {
+                    search_layout.visibility = View.GONE
+                    item.icon = ContextCompat.getDrawable(this, R.drawable.ic_baseline_search_24)
+                } else {
+                    search_layout.visibility = View.VISIBLE
+                    item.icon = ContextCompat.getDrawable(this, R.drawable.ic_round_search_off_24)
+                }
+
             }
 
             android.R.id.home -> {
@@ -156,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                 throwable.printStackTrace()
             }
 
-            return withContext(CoroutineScope(Dispatchers.IO + exceptionHandler).coroutineContext) {
+            return withContext(CoroutineScope(IO + exceptionHandler).coroutineContext) {
                 try {
                     val response: Response = client.newCall(request).execute()
                     val jsonArray = JSONArray(response.body()!!.string())
@@ -175,6 +247,10 @@ class MainActivity : AppCompatActivity() {
                     qMap
                 } catch (e: Exception) {
                     Log.e(TAG, "getSearchResults: ${e.stackTraceToString()}")
+                    if (e is SocketTimeoutException) {
+                        search_error_tv.visibility = View.VISIBLE
+                        search_error_tv.text = "Network connection timeout (Poor internet connection)"
+                    }
                     null
                 }
             }
@@ -191,18 +267,58 @@ class MainActivity : AppCompatActivity() {
             tab_layout.visibility = View.GONE
             view_pager.visibility = View.GONE
             search_rv.visibility = View.VISIBLE
+            search_layout.visibility = View.VISIBLE
+            menuMain[0].isVisible = false
             app_icon.visibility = View.VISIBLE
             toolbar.title = "search results"
         } else if (search_rv.isVisible) {
+            search_error_tv.visibility = View.GONE
             search_rv.visibility = View.GONE
             layout_main.gravity = Gravity.CENTER
             toolbar.title = "wikiquote"
             toolbar.visibility = View.GONE
+            search_layout.visibility = View.VISIBLE
             search_instructions.visibility = View.VISIBLE
         } else {
+            search_error_tv.visibility = View.GONE
             super.onBackPressed()
         }
 
+    }
+
+    override fun onWhatsAppClick(quote: String) {
+        val whatsappIntent = Intent(Intent.ACTION_SEND)
+        whatsappIntent.type = "text/plain"
+        whatsappIntent.setPackage("com.whatsapp")
+        whatsappIntent.putExtra(Intent.EXTRA_TEXT, quote)
+        try {
+            startActivity(whatsappIntent)
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(
+                this,
+                "Whatsapp have not been installed.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    override fun onShareClick(quote: String) {
+        startActivity(Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, quote)
+        })
+    }
+
+    override fun onCopyClick(quote: String) {
+        val clipBoard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText(CLIP_DATA, quote)
+        clipBoard.setPrimaryClip(clip)
+        Toast.makeText(
+            this,
+            "Quote copied to clipboard",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 }

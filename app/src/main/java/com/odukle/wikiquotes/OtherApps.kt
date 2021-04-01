@@ -17,6 +17,9 @@ class OtherApps : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_round_arrow_back_ios_24)
 
+        if (MainActivity.isAdRequestInitialized()) {
+            ad_view_aa.loadAd(MainActivity.adRequest)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

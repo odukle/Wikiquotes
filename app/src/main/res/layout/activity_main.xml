@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="8dp"
+        android:id="@+id/search_layout"
         android:weightSum="10">
 
         <com.google.android.material.card.MaterialCardView
@@ -96,7 +97,19 @@
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/search_error_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="50dp"
+        android:text="Network connection timeout"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:textSize="15sp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_rv"
@@ -110,11 +123,12 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/CustomTab"
+        android:theme="@style/CustomTab"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        app:tabMode="scrollable"/>
+        app:tabMode="scrollable"
+        app:tabGravity="fill"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

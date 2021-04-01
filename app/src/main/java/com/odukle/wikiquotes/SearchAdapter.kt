@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -17,8 +19,8 @@ class SearchAdapter(private var map: Map<String, String>) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     inner class SearchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val result_tv = view.findViewById<TextView>(R.id.search_result_tv)
-        val result_card = view.findViewById<CardView>(R.id.search_result_card)
+        val resultTv: TextView = view.findViewById(R.id.search_result_tv)
+        val resultCard: CardView = view.findViewById(R.id.search_result_card)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
@@ -29,33 +31,42 @@ class SearchAdapter(private var map: Map<String, String>) :
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         val title = map.keys.elementAt(position)
-        holder.result_tv.text = title
-        holder.result_card.setOnClickListener {
+        holder.resultTv.text = title
+        holder.resultCard.setOnClickListener {
             if (isOnline(MainActivity.instance)) {
                 MainActivity.instance.progress_bar.visibility = View.VISIBLE
                 MainActivity.instance.search_rv.visibility = View.GONE
                 MainActivity.instance.layout_main.gravity = Gravity.CENTER
                 val link = map.values.elementAt(position)
                 Log.d(TAG, "onBindViewHolder: link --> $link")
-                MainActivity.getFilmQuotes(link).addOnCompleteListener {
-                    if (it.isSuccessful) {
+                MainActivity.getFilmQuotes(link).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
                         Log.d(TAG, "onBindViewHolder: task success")
-                        val seasonMap = it.result as MutableMap<String, Any>
-                        Log.d(TAG, "onBindViewHolder: seasonMap --> ${seasonMap?.size}")
+                        val seasonMap = task.result as MutableMap<String, Any>
                         val viewPager = MainActivity.instance.view_pager
-                        val tabLayout = MainActivity.instance.tab_layout
 
                         seasonMap.remove("See also")
                         seasonMap.remove("References")
-                        viewPager.adapter = ViewPagerAdapter(seasonMap)
-                        MainActivity.instance.search_rv.visibility = View.GONE
 
+                        val sortedMap = seasonMap.toSortedMap()
+
+                        viewPager.adapter = ViewPagerAdapter(sortedMap)
+                        viewPager.offscreenPageLimit = sortedMap.size
+
+                        MainActivity.instance.view_pager.visibility = View.VISIBLE
+                        MainActivity.instance.tab_layout.visibility = View.VISIBLE
+                        MainActivity.instance.search_layout.visibility = View.GONE
+                        MainActivity.menuMain[0].isVisible = true
+                        MainActivity.menuMain[0].icon = ContextCompat.getDrawable(
+                            MainActivity.instance,
+                            R.drawable.ic_baseline_search_24
+                        )
                         MainActivity.instance.progress_bar.visibility = View.GONE
-                        MainActivity.instance.layout_main.gravity = Gravity.NO_GRAVITY
                         MainActivity.instance.toolbar.title = title
+                        MainActivity.instance.search_rv.visibility = View.GONE
                         MainActivity.instance.app_icon.visibility = View.GONE
-                        viewPager.visibility = View.VISIBLE
-                        tabLayout.visibility = View.VISIBLE
+                        MainActivity.instance.layout_main.gravity = Gravity.NO_GRAVITY
+
                     }
                 }
             } else {

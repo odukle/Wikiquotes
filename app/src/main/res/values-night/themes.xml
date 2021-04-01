@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.Wikiquotes" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/accent_200</item>
+        <item name="colorPrimaryVariant">@color/accent_700</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -12,22 +12,27 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="fontFamily">@font/louis_george_cafe</item>
     </style>
 
     <style name="CustomCardView" parent="CardView">
         <item name="cardBackgroundColor">#191919</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="fontFamily">@font/louis_george_cafe</item>
     </style>
 
     <style name="CustomTab" parent="Widget.Design.TabLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="fontFamily">@font/louis_george_cafe</item>
+        <item name="singleLine">true</item>
     </style>
 
     <style name="ToolbarTitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
+        <item name="fontFamily">@font/louis_george_cafe_bold</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -36,10 +41,16 @@
 
     <style name="MainTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/main_bg_dark</item>
+        <item name="fontFamily">@font/louis_george_cafe</item>
     </style>
 
     <style name="LyricsStyleBold" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/louis_george_cafe_bold</item>
+    </style>
+
+    <style name="TitleTextStyle" parent="Widget.MaterialComponents.TextView">
+        <item name="singleLine">true</item>
     </style>
 </resources>

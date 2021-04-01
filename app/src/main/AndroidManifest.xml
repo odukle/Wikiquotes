@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.odukle.wikiquotes">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".MyApplication"
-        android:theme="@style/Theme.Wikiquotes">
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:theme="@style/Theme.Wikiquotes"
+        tools:targetApi="n">
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
